@@ -5,3 +5,4 @@ wsl -install
  redis-cli
  ping 
  
+ While running in local need to update some values
