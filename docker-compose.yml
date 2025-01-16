@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  app:
+    image: urlshort:0.0.2
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/urlshortener
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "9090:8081" # Expose port 8080 to access the Java app
+    networks:
+      - urlshortener-net
+    restart: on-failure  # Optionally, restart the app on failure (good for production)
+
+  db:
+    image: mysql:8.0
+    environment:
+      DATABASE_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: urlshortener
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
+    ports:
+      - "3307:3306" # Expose port 3306 for MySQL access
+    networks:
+      - urlshortener-net
+    restart: always  # Restart MySQL if it stops unexpectedly
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+    networks:
+      - urlshortener-net
+    restart: always  # Restart Redis if it stops unexpectedly
+
+networks:
+  urlshortener-net:
+    driver: bridge
