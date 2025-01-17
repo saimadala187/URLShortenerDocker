@@ -44,8 +44,7 @@ services:
       timeout: 5s
     networks:
       - urlshortener-net
-    volumes:
-      - redis-data:/data
+
     restart: always  # Restart Redis if it stops unexpectedly
 
 networks:
